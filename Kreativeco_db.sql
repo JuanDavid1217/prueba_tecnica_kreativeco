@@ -1,0 +1,30 @@
+DROP DATABASE IF EXISTS Kreativeco;
+CREATE DATABASE IF NOT EXISTS Kreativeco;
+
+USE Kreativeco;
+
+DROP TABLE IF EXISTS Publications;
+DROP TABLE IF EXISTS Users;
+
+CREATE TABLE IF NOT EXISTS Users(
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50),
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('Básico', 'Medio', 'Medio alto', 'Alto medio', 'Alto') NOT NULL DEFAULT 'Básico',
+	active TINYINT(1) NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS Publications(
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_author BIGINT NOT NULL,
+    title VARCHAR(50),
+    description TEXT,
+    creation_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modification_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    active TINYINT(1)NOT NULL DEFAULT 1,
+	CONSTRAINT fk_user_publication FOREIGN KEY (id_author) REFERENCES Users(id)
+);
+
+INSERT INTO Users(name, last_name, email, password, role) VALUES ("Admin", "Admin", "Admin", "$argon2i$v=19$m=65536,t=4,p=1$YlV2cWdQTVFTLjJKbEdQNA$DI1z9yqgePX6x+JJ4LID9+ZVSgH5HF6SmHWF/tFPwdw", "Alto");
