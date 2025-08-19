@@ -4,6 +4,7 @@
     use App\Dao\UserDao;
     use App\Utils\Validator;
     use App\Utils\HttpException;
+    use App\Utils\AccessLevel;
 
     class UserService {
         private UserDao $dao;
@@ -31,6 +32,11 @@
             $flag = Validator::checkEmail($data['email']);
             if (!$flag['isValid']){
                 throw new HttpException(409, $flag['message']);
+            }
+
+            $role = AccessLevel::existsRole($role);
+            if (is_null($role)){
+                throw new HttpException(409, 'Rol invalido.');
             }
             
             return $this->dao->createUser($name, $last_name, $email, Validator::encrypt_password($password), $role);  
@@ -60,6 +66,11 @@
 
             if (is_null($name) || is_null($last_name) || is_null($role)){
                 throw new HttpException(422, 'Los siguientes campos son requeridos: name, last_name y role.');
+            }
+
+            $role = AccessLevel::existsRole($role);
+            if (is_null($role)){
+                throw new HttpException(409, 'Rol invalido.');
             }
 
             $this->dao->update($id, $name, $last_name, $role);
